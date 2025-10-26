@@ -568,6 +568,8 @@ namespace TriggerSegfault.editor
         }
 
 #if SKYBOXSETTINGS_USE_REFLECTION && SKYBOXSETTINGS_SERIALIZED_PROPERTIES
+        // The following properties have no .NET API for changing them. They
+        // were identified via the UnityEditor.OtherRenderingEditor class.
         private static void ReadWriteHaloTextureSpotCookie(
             SceneSkyboxSettings settings,
             UnityEngine.Object renderSettingsObject,
