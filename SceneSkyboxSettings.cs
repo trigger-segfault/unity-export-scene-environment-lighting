@@ -2,18 +2,18 @@
 // Skybox settings.
 
 // Allows recording undos when writing back to the scene, and required for
-// `SCENEENVLIGHT_SERIALIZED_PROPERTIES`.
-#define SCENEENVLIGHT_USE_REFLECTION
+// `SKYBOXSETTINGS_SERIALIZED_PROPERTIES`.
+#define SKYBOXSETTINGS_USE_REFLECTION
 // Use SerializedObject to access hidden fields not present in the .NET class.
-// Requires: `SCENEENVLIGHT_USE_REFLECTION`.
+// Requires: `SKYBOXSETTINGS_USE_REFLECTION`.
 // Supports: Texture haloTexture, Texture spotCookie
-#define SCENEENVLIGHT_SERIALIZED_PROPERTIES
+#define SKYBOXSETTINGS_SERIALIZED_PROPERTIES
 
 #if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
 using System.IO;
-#if SCENEENVLIGHT_USE_REFLECTION
+#if SKYBOXSETTINGS_USE_REFLECTION
 using System.Reflection;
 #endif
 using UnityEditor;
@@ -25,12 +25,12 @@ namespace TriggerSegfault.editor
     /// <summary>
     /// Exportable settings for Window/Rendering/Lighting's Environment tab.
     /// </summary>
-    public class SceneEnvironmentLighting : ScriptableObject
+    public class SceneSkyboxSettings : ScriptableObject
     {
         // Set to null to disable custom icon.
         const string AssetIconName = "d_LightingSettings Icon";
 
-        const string FriendlyName = "Scene Environment Lighting";
+        const string FriendlyName = "Scene Skybox Settings";
 
         const float SecondaryPriority = 10100f;
         const string MenuFolder = "Trigger Segfault/" + FriendlyName + "/";
@@ -43,12 +43,12 @@ namespace TriggerSegfault.editor
         const string CopySceneMenuPath  = "Tools/"  + MenuFolder + "Copy Values from Scene";
         const string PasteSceneMenuPath = "Tools/"  + MenuFolder + "Paste Values to Scene";
 
-        const string CreateFileName = nameof(SceneEnvironmentLighting) + ".asset";
+        const string CreateFileName = nameof(SceneSkyboxSettings) + ".asset";
 
         private static string s_scriptFolder;
         private static string ClipboardFilePath => Path.Combine(
             s_scriptFolder ?? "Assets",
-            nameof(SceneEnvironmentLighting) + "_Clipboard.asset"
+            nameof(SceneSkyboxSettings) + "_Clipboard.asset"
         );
 
         /// <summary>
@@ -158,7 +158,7 @@ namespace TriggerSegfault.editor
         /// <remarks>Only powers of two. Floored if not power of two.</remarks>
         [Tooltip("Environment: Environment Reflections > Resolution (Source: Skybox)")]
         public ReflectionResolution defaultReflectionResolution;
-#if SCENEENVLIGHT_USE_REFLECTION && SCENEENVLIGHT_SERIALIZED_PROPERTIES
+#if SKYBOXSETTINGS_USE_REFLECTION && SKYBOXSETTINGS_SERIALIZED_PROPERTIES
         /// <summary>Other Settings: Halo Texture</summary>
         /// <remarks>
         /// RenderSettings serialized: m_HaloTexture<para/>
@@ -179,7 +179,7 @@ namespace TriggerSegfault.editor
         [Tooltip("Other Settings: Flare Fade Speed")]
         /// <remarks>No range.</remarks>
         public float flareFadeSpeed;
-#if SCENEENVLIGHT_USE_REFLECTION && SCENEENVLIGHT_SERIALIZED_PROPERTIES
+#if SKYBOXSETTINGS_USE_REFLECTION && SKYBOXSETTINGS_SERIALIZED_PROPERTIES
         /// <summary>Other Settings: Spot Cookie</summary>
         /// <remarks>
         /// RenderSettings serialized: m_SpotCookie<para/>
@@ -207,7 +207,7 @@ namespace TriggerSegfault.editor
             string folderPath = GetSelectedFolder();
             if (folderPath != null)
             {
-                var settings = ScriptableObject.CreateInstance<SceneEnvironmentLighting>();
+                var settings = ScriptableObject.CreateInstance<SceneSkyboxSettings>();
                 try
                 {
                     settings.Read(recordUndo: false);
@@ -250,7 +250,7 @@ namespace TriggerSegfault.editor
         [MenuItem(CopySceneMenuPath, false, secondaryPriority = SecondaryPriority + 0f)]
         private static void MenuCopyFromScene()
         {
-            var settings = ScriptableObject.CreateInstance<SceneEnvironmentLighting>();
+            var settings = ScriptableObject.CreateInstance<SceneSkyboxSettings>();
             try
             {
                 settings.Read(recordUndo: false);
@@ -291,12 +291,14 @@ namespace TriggerSegfault.editor
         private static bool MenuValidateHasClipboard()
         {
             return AssetDatabase.GetMainAssetTypeAtPath(ClipboardFilePath)
-                == typeof(SceneEnvironmentLighting);
+                == typeof(SceneSkyboxSettings);
         }
 
         [MenuItem(PasteAssetMenuPath, true)]
         private static bool MenuValidateHasSelectedAssetAndClipboard()
         {
+            /// OPTIMIZE: Test selected asset first because it's probably the
+            /// faster of the two to check.
             return MenuValidateHasSelectedAsset() && MenuValidateHasClipboard();
         }
 
@@ -321,22 +323,22 @@ namespace TriggerSegfault.editor
             return null;
         }
 
-        private static SceneEnvironmentLighting GetSelectedAsset()
+        private static SceneSkyboxSettings GetSelectedAsset()
         {
             if (Selection.activeObject != null &&
-                Selection.activeObject is SceneEnvironmentLighting settings)
+                Selection.activeObject is SceneSkyboxSettings settings)
             {
                 return settings;
             }
             return null;
         }
 
-        private static SceneEnvironmentLighting GetClipboardAsset()
+        private static SceneSkyboxSettings GetClipboardAsset()
         {
-            return AssetDatabase.LoadAssetAtPath<SceneEnvironmentLighting>(ClipboardFilePath);
+            return AssetDatabase.LoadAssetAtPath<SceneSkyboxSettings>(ClipboardFilePath);
         }
 
-        private static void SetClipboardAsset(SceneEnvironmentLighting settings)
+        private static void SetClipboardAsset(SceneSkyboxSettings settings)
         {
             if (settings != null)
             {
@@ -345,7 +347,7 @@ namespace TriggerSegfault.editor
                     // Not sure if this is necessary. It's unclear if creating
                     // an asset from an asset file that already exists is bad
                     // practice or not.
-                    var newSettings = ScriptableObject.CreateInstance<SceneEnvironmentLighting>();
+                    var newSettings = ScriptableObject.CreateInstance<SceneSkyboxSettings>();
                     try
                     {
                         CopyAsset(settings, newSettings, recordUndo: false);
@@ -362,7 +364,7 @@ namespace TriggerSegfault.editor
         }
 
         private static void CopyAsset(
-            SceneEnvironmentLighting source, SceneEnvironmentLighting dest, bool recordUndo
+            SceneSkyboxSettings source, SceneSkyboxSettings dest, bool recordUndo
         )
         {
             if (source != null && dest != null)
@@ -454,7 +456,7 @@ namespace TriggerSegfault.editor
             this.flareStrength               = RenderSettings.flareStrength;
             this.flareFadeSpeed              = RenderSettings.flareFadeSpeed;
 
-#if SCENEENVLIGHT_USE_REFLECTION && SCENEENVLIGHT_SERIALIZED_PROPERTIES
+#if SKYBOXSETTINGS_USE_REFLECTION && SKYBOXSETTINGS_SERIALIZED_PROPERTIES
             // haloTexture
             // spotCookie
             ReadWriteHaloTextureSpotCookie(this, GetRenderSettings(), read: true);
@@ -476,15 +478,15 @@ namespace TriggerSegfault.editor
         {
             // Create a copy for validation, so that invalid values aren't
             // changed in the original file (for version control reasons).
-            var valid = ScriptableObject.CreateInstance<SceneEnvironmentLighting>();
+            var valid = ScriptableObject.CreateInstance<SceneSkyboxSettings>();
             try
             {
             CopyAsset(this, valid, recordUndo: false);
             //EditorUtility.CopySerialized(this, valid);
             valid.OnValidate();
 
-#if SCENEENVLIGHT_USE_REFLECTION
-#if SCENEENVLIGHT_SERIALIZED_PROPERTIES
+#if SKYBOXSETTINGS_USE_REFLECTION
+#if SKYBOXSETTINGS_SERIALIZED_PROPERTIES
             // Required to write serialized properties, always get.
             var renderSettingsObject = GetRenderSettings();
 #else
@@ -510,7 +512,7 @@ namespace TriggerSegfault.editor
                     );
                 }
             }
-#endif // SCENEENVLIGHT_USE_REFLECTION
+#endif // SKYBOXSETTINGS_USE_REFLECTION
 
             RenderSettings.fog                         = valid.fog;
             RenderSettings.fogStartDistance            = valid.fogStartDistance;
@@ -537,7 +539,7 @@ namespace TriggerSegfault.editor
             RenderSettings.flareStrength               = valid.flareStrength;
             RenderSettings.flareFadeSpeed              = valid.flareFadeSpeed;
 
-#if SCENEENVLIGHT_USE_REFLECTION && SCENEENVLIGHT_SERIALIZED_PROPERTIES
+#if SKYBOXSETTINGS_USE_REFLECTION && SKYBOXSETTINGS_SERIALIZED_PROPERTIES
             // haloTexture
             // spotCookie
             ReadWriteHaloTextureSpotCookie(valid, renderSettingsObject, read: false);
@@ -545,7 +547,7 @@ namespace TriggerSegfault.editor
 
             LightmapEditorSettings.reflectionCubemapCompression = valid.reflectionCubemapCompression;
 
-#if SCENEENVLIGHT_USE_REFLECTION
+#if SKYBOXSETTINGS_USE_REFLECTION
             if (recordUndo && recordObjects != null)
             {
                 foreach (var recordObject in recordObjects)
@@ -561,9 +563,9 @@ namespace TriggerSegfault.editor
             }
         }
 
-#if SCENEENVLIGHT_USE_REFLECTION && SCENEENVLIGHT_SERIALIZED_PROPERTIES
+#if SKYBOXSETTINGS_USE_REFLECTION && SKYBOXSETTINGS_SERIALIZED_PROPERTIES
         private static void ReadWriteHaloTextureSpotCookie(
-            SceneEnvironmentLighting settings,
+            SceneSkyboxSettings settings,
             UnityEngine.Object renderSettingsObject,
             bool read
         )
@@ -604,9 +606,9 @@ namespace TriggerSegfault.editor
                 serialized.ApplyModifiedPropertiesWithoutUndo();
             }
         }
-#endif // SCENEENVLIGHT_USE_REFLECTION && SCENEENVLIGHT_SERIALIZED_PROPERTIES
+#endif // SKYBOXSETTINGS_USE_REFLECTION && SKYBOXSETTINGS_SERIALIZED_PROPERTIES
 
-#if SCENEENVLIGHT_USE_REFLECTION
+#if SKYBOXSETTINGS_USE_REFLECTION
         private static bool s_internalMethodsLoaded = false;
         private static MethodInfo s_getRenderSettings;
         private static MethodInfo s_getLightmapSettings;
@@ -637,7 +639,7 @@ namespace TriggerSegfault.editor
             return s_getLightmapSettings?.Invoke(null, Array.Empty<object>())
                 as UnityEngine.Object;
         }
-#endif // SCENEENVLIGHT_USE_REFLECTION
+#endif // SKYBOXSETTINGS_USE_REFLECTION
         #endregion
 
         #region Helpers
@@ -649,7 +651,7 @@ namespace TriggerSegfault.editor
 
         private static void AssignAssetIconAndFindScriptFolder()
         {
-            var dummyObject = ScriptableObject.CreateInstance<SceneEnvironmentLighting>();
+            var dummyObject = ScriptableObject.CreateInstance<SceneSkyboxSettings>();
             try
             {
                 var script = MonoScript.FromScriptableObject(dummyObject);
