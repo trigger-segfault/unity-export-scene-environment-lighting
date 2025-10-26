@@ -33,15 +33,17 @@ This menu is for managing settings exported to asset files.
 
 ## Image Previews
 
+
+
 *(Tools menu)*<br>
-<img width="707" height="133" alt="Tools menu" src="https://github.com/user-attachments/assets/5a24a774-747e-4076-a5d4-ae10e4a44799" />
+<img width="705" height="132" alt="Tools menu" src="https://github.com/user-attachments/assets/d7fc39c8-04c3-4be1-b1ab-d6056aaa9622" />
 
 ***
 
 *(Assets menu)*<br>
-<img width="973" height="191" alt="Assets menu" src="https://github.com/user-attachments/assets/221d7081-96de-4aa1-8079-56cc7ab57714" />
+<img width="865" height="200" alt="Assets menu" src="https://github.com/user-attachments/assets/284934c7-fffc-41a0-9920-89b6dfcb8175" />
 
 ***
 
 *(Asset Inspector)*<br>
-<img width="582" height="662" alt="Asset inspector" src="https://github.com/user-attachments/assets/4fc2168b-0062-4f42-bee0-7a33832adf5f" />
+<img width="531" height="654" alt="Asset inspector" src="https://github.com/user-attachments/assets/4cf75819-7fa3-4d70-a404-c179f65ca304" />
