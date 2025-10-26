@@ -1,4 +1,4 @@
-# Unity Exportable Scene Skybox Settings
+# Unity Exportable Skybox Settings
 Exportable settings for **Window** &gt; **Rendering** &gt; **Lighting**'s **Environment** tab. AKA **Skybox** settings. Settings can be copy and pasted between scenes, or exported to and imported from asset files. Importing or exporting from the scene can **only** be done with the currently-loaded scene. Undo is supported for changes made to the scene or assets.
 
 **Disclaimer:** Designed for Unity 2022.3.22f1 (for VRChat), so it's possible this may not work with newer or older Unity versions, as it relies on some reflection for properties with no API access.
