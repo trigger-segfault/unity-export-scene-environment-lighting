@@ -481,10 +481,19 @@ namespace TriggerSegfault.editor
             var valid = ScriptableObject.CreateInstance<SceneSkyboxSettings>();
             try
             {
-            CopyAsset(this, valid, recordUndo: false);
-            //EditorUtility.CopySerialized(this, valid);
-            valid.OnValidate();
+                EditorUtility.CopySerialized(this, valid);
+                valid.OnValidate();
 
+                WriteInternal(valid, recordUndo: recordUndo);
+            }
+            finally
+            {
+                DestroyImmediate(valid);
+            }
+        }
+
+        private static void WriteInternal(SceneSkyboxSettings valid, bool recordUndo)
+        {
 #if SKYBOXSETTINGS_USE_REFLECTION
 #if SKYBOXSETTINGS_SERIALIZED_PROPERTIES
             // Required to write serialized properties, always get.
@@ -556,11 +565,6 @@ namespace TriggerSegfault.editor
                 }
             }
 #endif
-            }
-            finally
-            {
-                DestroyImmediate(valid);
-            }
         }
 
 #if SKYBOXSETTINGS_USE_REFLECTION && SKYBOXSETTINGS_SERIALIZED_PROPERTIES
